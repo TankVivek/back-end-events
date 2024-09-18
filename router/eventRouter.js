@@ -1,13 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const upload = require('../utils/multer');
-const { createEvents, listEvents, updateEvent } = require('../controller/createEventController');
+const { createEvents, listEvents, updateEvent , deleteEvent } = require('../controller/createEventController');
 const { verifyAdmin, VerifyToken } = require('../utils/helper');
-const { bookEvent, getUserBookings ,cancelBooking} = require('../controller/eventBookingController');
+const { bookEvent, getUserBookings ,cancelBooking } = require('../controller/eventBookingController');
 
 // create event
 router.post('/create-events', upload.single('image'), verifyAdmin, createEvents);
 router.put('/update-events/:id', verifyAdmin, updateEvent);
+
+// Assuming you're using Express router
+router.put('/events/:id', deleteEvent);
 
 // view events
 router.get('/list-events', VerifyToken, listEvents);
