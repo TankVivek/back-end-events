@@ -54,29 +54,36 @@ const listEvents = async (req, res) => {
 const updateEvent = async (req, res) => {
   const { id } = req.params;
   const { title, description, location, startDate, endDate } = req.body;
-  const image = req.file ? req.file.path : null;
 
   try {
-    const updatedEvent = await Event.findByIdAndUpdate(
-      id,
-      {
-        title,
-        description, 
-        location,
-        startDate,
-        endDate,
-        ...(image && { image }),
-      },
-      { new: true, runValidators: true }
-    );
+    const image = req.file ? req.file.path : null;
+    let imageUrl = null;
 
-    if (!updatedEvent) {
+    if (image) {
+      const uploadResponse = await uploadImageToImgBB(image);
+      if (uploadResponse && uploadResponse.data) {
+        imageUrl = uploadResponse.data.display_url; // Get the uploaded image URL
+      } else {
+        throw new Error('Image upload failed'); // Handle the error if the upload fails
+      }
+    }
+    
+    const existingEvent = await Event.findById(id);
+    if (!existingEvent) {
       return res.status(404).json({
         success: false,
         message: 'Event not found',
       });
     }
-
+    existingEvent.title = title;
+    existingEvent.description = description;
+    existingEvent.location = location;
+    existingEvent.startDate = startDate;
+    existingEvent.endDate = endDate;
+    if (imageUrl) {
+      existingEvent.image = imageUrl;
+    }
+    const updatedEvent = await existingEvent.save();
     res.status(200).json({
       success: true,
       data: updatedEvent,

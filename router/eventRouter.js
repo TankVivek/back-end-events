@@ -6,8 +6,8 @@ const { verifyAdmin, VerifyToken } = require('../utils/helper');
 const { bookEvent, getUserBookings ,cancelBooking } = require('../controller/eventBookingController');
 
 // create event
-router.post('/create-events', upload.single('image'), verifyAdmin, createEvents);
-router.put('/update-events/:id', verifyAdmin, updateEvent);
+router.post('/create-events',upload.single('image'), verifyAdmin, createEvents);
+router.put('/update-events/:id',upload.single('image'), verifyAdmin, updateEvent);
 
 // Assuming you're using Express router
 router.put('/events/:id', deleteEvent);
